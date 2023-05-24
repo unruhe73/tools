@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # suppose you want let only your host access to a server: specify your host IP into ADMIN_NET2
+# use this script as root user and be sure "iptables" is into /sbin directory
+
 ADMIN_NET1=127.0.0.1/8
 ADMIN_NET2=192.168.0.209/32
 
