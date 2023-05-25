@@ -13,6 +13,11 @@ then
 fi
 rm -f $MACSFILE_PREFIX?.txt
 
+if [ -z "$DEBUG" ];
+then
+  DEBUG=0
+fi
+
 function isInFile
 {
   if [ -z "$1" ];
@@ -31,7 +36,10 @@ function isInFile
       do
         if [ "z$1" == "z$lilne" ];
         then
-          echo "*** FOUND an existing MAC address"
+          if [ $DEBUG -eq 1 ];
+          then
+            echo "*** FOUND an existing MAC address: $1"
+          fi
           return 1
         fi
       done < $FILENAME
@@ -55,9 +63,13 @@ do
   then
     echo "$mac" >> $MAC_FILENAME
     x=$((x+1))
-    echo "$x: $mac"
+    if [ $DEBUG -eq 1 ];
+    then
+      echo "$x: $mac"
+    fi
     if [ $x -eq $MACS_PER_FILE ];
     then
+      echo "... wrote $MAC_FILENAME file"
       JJ=$((JJ+1))
       x=0
       MAC_FILENAME="$MACSFILE_PREFIX$JJ.txt"
