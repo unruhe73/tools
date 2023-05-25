@@ -16,6 +16,15 @@ rm -f $MACSFILE_PREFIX?.txt
 if [ -z "$DEBUG" ];
 then
   DEBUG=0
+else
+  case "$DEBUG" in
+    "0"|"1")
+      ;;
+    *)
+      DEBUG=0
+      ;;
+  esac
+  fi
 fi
 
 function isInFile
