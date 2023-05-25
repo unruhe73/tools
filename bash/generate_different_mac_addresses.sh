@@ -1,7 +1,7 @@
 #!/bin/bash
 
 hexchars="0123456789ABCDEF"
-MACSFILE_PREFIX="$HOME/macs0"
+MACSFILE_PREFIX="$PWD/macs0"
 if [ -z "$MACS_PER_FILE" ];
 then
   MACS_PER_FILE=200
@@ -24,7 +24,6 @@ else
       DEBUG=0
       ;;
   esac
-  fi
 fi
 
 function isInFile
@@ -66,7 +65,7 @@ JJ=1
 MAC_FILENAME="$MACSFILE_PREFIX$JJ.txt"
 while [ $x -lt $MACS_PER_FILE ] && [ $JJ -le $NUMBER_OF_FILES ];
 do
-  mac="00:0C:29$(for i in {1..6}; do echo -n ${hexchars:$(( $RANDOM % 16 )):1} ; done | sed -e 's/\(..\)/:\1/g')"
+  mac=$(printf "00:0C:29:%02x:%02x:%02x\n" $(( $RANDOM % 256 )) $(( $RANDOM % 256 )) $(( $RANDOM % 256)); )
   isInFile $mac
   if [ $? -eq 0 ];
   then
