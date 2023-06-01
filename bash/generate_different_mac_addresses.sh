@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DEFAULT_MAC_PREFIX="00:0C:29"
+
 function log10
 {
   if [ -z "$1" ];
@@ -16,86 +18,44 @@ function log10
 }
 
 
-if [ -z "$DEBUG" ];
-then
-  DEBUG=0
-else
-  case $DEBUG in
-    "0"|"1")
-      ;;
-    "y"|"yes"|"true")
-      DEBUG=1
-      ;;
-    "n"|"no"|"false")
-      DEBUG=0
-      ;;
-    *)
-      DEBUG=0
-      echo "DEBUG is NOT assigned correctly, used 'false' value in place of the wrong value"
-  esac
-fi
+function checkMAC
+{
+  if [ -z "$1" ];
+  then
+    echo "MAC prefix NOT assigned, using the default one: $DEFAULT_MAC_PREFIX"
+    MAC_PREFIX=$DEFAULT_MAC_PREFIX
+  else
+    MAC_PREFIX_SIZE=${#1}
+    case $MAC_PREFIX_SIZE in
+      "2")
+        TOTAL_POSSIBLE_MAC_ADDRESSES=$((256**5))
+        echo "I assigned $MAC_PREFIX as a MAC prefix"
+        ;;
+      "5")
+        TOTAL_POSSIBLE_MAC_ADDRESSES=$((256**4))
+        echo "I assigned $MAC_PREFIX as a MAC prefix"
+        ;;
+      "8")
+        TOTAL_POSSIBLE_MAC_ADDRESSES=$((256**3))
+        echo "I assigned $MAC_PREFIX as a MAC prefix"
+        ;;
+      "11")
+        TOTAL_POSSIBLE_MAC_ADDRESSES=$((256**2))
+        echo "I assigned $MAC_PREFIX as a MAC prefix"
+        ;;
+      "14")
+        TOTAL_POSSIBLE_MAC_ADDRESSES=$((256**1))
+        echo "I assigned $MAC_PREFIX as a MAC prefix"
+        ;;
+      *)
+        echo "$MAC_PREFIX is NOT correct as a MAC prefix, replacing it with $DEFAULT_MAC_PREFIX"
+        TOTAL_POSSIBLE_MAC_ADDRESSES=$((256**3))
+        MAC_PREFIX=$DEFAULT_MAC_PREFIX
+        ;;
+    esac
+  fi
+}
 
-if [ -z "$DESTDIR" ];
-then
-  DESTDIR="$HOME"
-fi
-
-if [ -d "$DESTDIR" ];
-then
-  DESTDIR="$DESTDIR/mac_addresses"
-  mkdir -p $DESTDIR
-  echo "MAC list files is going to be written to $DESTDIR"
-else
-  echo "$DESTDIR does NOT exist"
-  exit 1
-fi
-
-if [ -z "$MAC_PREFIX" ];
-then
-  MAC_PREFIX="00:0C:29"
-  echo "I assigned $MAC_PREFIX as a MAC prefix"
-else
-  size=${#MAC_PREFIX}
-  case $size in
-    "3"|"5"|"7"|"9")
-      echo "I assigned $MAC_PREFIX as a MAC prefix"
-      ;;
-    *)
-      echo "$MAC_PREFIX is NOT correct as a MAC prefix, replacing it with 00:0C:29"
-      MAC_PREFIX="00:0C:29"
-      ;;
-  esac
-fi
-
-hexchars="0123456789ABCDEF"
-MACSFILE_PREFIX="$DESTDIR/macs0"
-if [ -z "$MACS_PER_FILE" ];
-then
-  MACS_PER_FILE=200
-fi
-
-case $MACS_PER_FILE in
-  "1")
-    echo "I'm going to generate $MACS_PER_FILE different MAC address per file"
-    ;;
-  *)
-    echo "I'm going to generate $MACS_PER_FILE different MAC addresses per file"
-    ;;
-esac
-
-if [ -z "$NUMBER_OF_FILES" ];
-then
-  NUMBER_OF_FILES=5
-fi
-rm -f $MACSFILE_PREFIX*.txt
-case $NUMBER_OF_FILES in
-  "1")
-    echo "I'm going to generate $NUMBER_OF_FILES file"
-    ;;
-  *)
-    echo "I'm going to generate $NUMBER_OF_FILES files"
-    ;;
-esac
 
 function isInFile
 {
@@ -126,7 +86,80 @@ function isInFile
   done
   return 0
 }
-export -f isInFile
+
+
+checkMAC $MAC_PREFIX
+
+if [ -z "$DEBUG" ];
+then
+  DEBUG=0
+else
+  case $DEBUG in
+    "0"|"1")
+      ;;
+    "y"|"yes"|"true")
+      DEBUG=1
+      ;;
+    "n"|"no"|"false")
+      DEBUG=0
+      ;;
+    *)
+      DEBUG=0
+      echo "DEBUG is NOT assigned correctly, used 'false' value in place of the wrong value"
+  esac
+fi
+
+if [ -z "$DESTDIR" ];
+then
+  DESTDIR="$HOME"
+fi
+
+if [ -d "$DESTDIR" ];
+then
+  DESTDIR="$DESTDIR/mac_addresses"
+  mkdir -p $DESTDIR
+  echo "MAC list files is going to be written to $DESTDIR directory"
+else
+  echo "$DESTDIR does NOT exist"
+  exit 1
+fi
+
+MACSFILE_PREFIX="$DESTDIR/macs0"
+if [ -z "$MACS_PER_FILE" ];
+then
+  MACS_PER_FILE=200
+fi
+
+case $MACS_PER_FILE in
+  "1")
+    echo "I'm going to generate $MACS_PER_FILE different MAC address per file"
+    ;;
+  *)
+    echo "I'm going to generate $MACS_PER_FILE different MAC addresses per file"
+    ;;
+esac
+
+if [ -z "$NUMBER_OF_FILES" ];
+then
+  NUMBER_OF_FILES=5
+fi
+rm -f $MACSFILE_PREFIX*.txt
+case $NUMBER_OF_FILES in
+  "1")
+    echo "I'm going to generate $NUMBER_OF_FILES file"
+    ;;
+  *)
+    echo "I'm going to generate $NUMBER_OF_FILES files"
+    ;;
+esac
+
+echo "the total possible MAC addresses are: $TOTAL_POSSIBLE_MAC_ADDRESSES"
+echo "I'm going to give you $((NUMBER_OF_FILES*MACS_PER_FILE)) MAC addresses"
+if [ $((NUMBER_OF_FILES*MACS_PER_FILE)) -gt $TOTAL_POSSIBLE_MAC_ADDRESSES ];
+then
+  echo "sorry, but I can't produce all the wanted MAC addresses using files and item per files as you wish"
+  exit 1
+fi
 
 x=0
 JJ=1
@@ -136,7 +169,23 @@ PREF=$(printf "$MACSFILE_PREFIX%0$(echo $NOZ)d" $JJ)
 MAC_FILENAME="$PREF.txt"
 while [ $x -lt $MACS_PER_FILE ] && [ $JJ -le $NUMBER_OF_FILES ];
 do
-  mac="$MAC_PREFIX$(for i in {1..6}; do echo -n ${hexchars:$(( $RANDOM % 16 )):1} ; done | sed -e 's/\(..\)/:\1/g')"
+  case $MAC_PREFIX_SIZE in
+    "2")
+      mac=$(printf "$MAC_PREFIX:%02x:%02x:%02x:%02x:%02x" $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)))
+      ;;
+    "5")
+      mac=$(printf "$MAC_PREFIX:%02x:%02x:%02x:%02x" $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)))
+      ;;
+    "8")
+      mac=$(printf "$MAC_PREFIX:%02x:%02x:%02x" $(($RANDOM % 256)) $(($RANDOM % 256)) $(($RANDOM % 256)))
+      ;;
+    "11")
+      mac=$(printf "$MAC_PREFIX:%02x:%02x" $(($RANDOM % 256)) $(($RANDOM % 256)))
+      ;;
+    "14")
+      mac=$(printf "$MAC_PREFIX:%02x" $(($RANDOM % 256)))
+      ;;
+  esac
   isInFile $mac
   if [ $? -eq 0 ];
   then
