@@ -1,5 +1,21 @@
 #!/bin/bash
 
+function log10
+{
+  if [ -z "$1" ];
+  then
+    VAL=10
+  else
+    VAL="$1"
+  fi
+
+  CALC="l($VAL)/l(10)"
+  RET=$(echo $CALC | bc -l)
+  RET=$(echo $RET | awk '{print int($1+0.5)}')
+  return $RET
+}
+
+
 if [ -z "$DEBUG" ];
 then
   DEBUG=0
@@ -114,7 +130,10 @@ export -f isInFile
 
 x=0
 JJ=1
-MAC_FILENAME="$MACSFILE_PREFIX$JJ.txt"
+log10 $NUMBER_OF_FILES
+NOZ=$(($?+1))
+PREF=$(printf "$MACSFILE_PREFIX%0$(echo $NOZ)d" $JJ)
+MAC_FILENAME="$PREF.txt"
 while [ $x -lt $MACS_PER_FILE ] && [ $JJ -le $NUMBER_OF_FILES ];
 do
   mac="$MAC_PREFIX$(for i in {1..6}; do echo -n ${hexchars:$(( $RANDOM % 16 )):1} ; done | sed -e 's/\(..\)/:\1/g')"
@@ -129,10 +148,11 @@ do
     fi
     if [ $x -eq $MACS_PER_FILE ];
     then
-      echo "wrote file n.$JJ"
+      echo "wrote file n.$JJ: $MAC_FILENAME"
       JJ=$((JJ+1))
       x=0
-      MAC_FILENAME="$MACSFILE_PREFIX$JJ.txt"
+      PREF=$(printf "$MACSFILE_PREFIX%0$(echo $NOZ)d" $JJ)
+      MAC_FILENAME="$PREF.txt"
     fi
   fi
 done
