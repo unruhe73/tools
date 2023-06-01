@@ -71,7 +71,7 @@ if [ -z "$NUMBER_OF_FILES" ];
 then
   NUMBER_OF_FILES=5
 fi
-rm -f $MACSFILE_PREFIX?.txt
+rm -f $MACSFILE_PREFIX*.txt
 case $NUMBER_OF_FILES in
   "1")
     echo "I'm going to generate $NUMBER_OF_FILES file"
@@ -129,6 +129,7 @@ do
     fi
     if [ $x -eq $MACS_PER_FILE ];
     then
+      echo "wrote file n.$JJ"
       JJ=$((JJ+1))
       x=0
       MAC_FILENAME="$MACSFILE_PREFIX$JJ.txt"
