@@ -17,12 +17,12 @@ def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
         command = ['ping', packets_opt, '1', '-W1', new_ip ]
         try:
             if subprocess.run(args=command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
-                if show_ips:
+                if show_reachable_ips:
                     print(f'{base_ip}.{i} reachable')
                 ips.append(new_ip)
         except KeyboardInterrupt:
             break
-        if not show_ips:
+        if not show_reachable_ips:
             print(end='.', flush=True)
         i += 1
     print()
