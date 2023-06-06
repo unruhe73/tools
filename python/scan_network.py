@@ -11,7 +11,7 @@ else:
 base_ip = '192.168.0'
 i = 1
 while i < 255:
-    command = ['ping', packets_opt, '1', f'{base_ip}.{i}']
+    command = ['ping', packets_opt, '1', '-W1', f'{base_ip}.{i}']
     try:
         if subprocess.run(args=command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
             print(f'{base_ip}.{i} reachable')
