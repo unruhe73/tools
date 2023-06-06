@@ -29,7 +29,7 @@ def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
     return ips
 
 
-ip_hosts = scanning_network(show_reachable_ips=True)
+ip_hosts = scanning_network(show_reachable_ips=False)
 print('reachable IPs:')
 for ip in ip_hosts:
     print(ip)
