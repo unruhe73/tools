@@ -5,6 +5,7 @@ import subprocess  # let you execute a shell command
 from progress.bar import Bar
 from time import sleep
 
+
 def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
     if not show_reachable_ips:
         bar = Bar('Processing', max=254)
@@ -32,11 +33,20 @@ def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
     return ips
 
 
-ip_hosts = scanning_network(show_reachable_ips=False)
-if len(ip_hosts) > 0:
-    sleep(2)
-    print('reachable IPs:')
-    for ip in ip_hosts:
-        print(ip)
-else:
-    print('No reachable IPs')
+def scanning_network_write_to_file(base_ip = '192.168.0', show_reachable_ips=False, write_to_file='reachable_ips.txt'):
+    ip_hosts = scanning_network(show_reachable_ips=False)
+    if len(ip_hosts) > 0:
+        if write_to_file:
+            with open(write_to_file, 'w+') as f:
+                f.write('\n'.join(ip_hosts))
+            print(f'See file {write_to_file} for output')
+        else:
+            sleep(2)
+            print('reachable IPs:')
+            for ip in ip_hosts:
+                print(ip)
+    else:
+        print('No reachable IPs')
+
+
+scanning_network_write_to_file()
