@@ -2,9 +2,12 @@
 
 import platform    # let you get the operating system name
 import subprocess  # let you execute a shell command
-
+from progress.bar import Bar
+from time import sleep
 
 def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
+    if not show_reachable_ips:
+        bar = Bar('Processing', max=254)
     ips = []
     if platform.system().lower() == 'windows':
         packets_opt = '-n'
@@ -23,13 +26,14 @@ def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
         except KeyboardInterrupt:
             break
         if not show_reachable_ips:
-            print(end='.', flush=True)
+            bar.next()
         i += 1
-    print()
+    bar.finish()
     return ips
 
 
 ip_hosts = scanning_network(show_reachable_ips=False)
+sleep(2)
 print('reachable IPs:')
 for ip in ip_hosts:
     print(ip)
