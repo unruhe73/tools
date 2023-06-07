@@ -33,7 +33,10 @@ def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
 
 
 ip_hosts = scanning_network(show_reachable_ips=False)
-sleep(2)
-print('reachable IPs:')
-for ip in ip_hosts:
-    print(ip)
+if len(ip_hosts) > 0:
+    sleep(2)
+    print('reachable IPs:')
+    for ip in ip_hosts:
+        print(ip)
+else:
+    print('No reachable IPs')
