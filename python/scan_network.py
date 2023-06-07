@@ -6,7 +6,7 @@ from progress.bar import Bar
 from time import sleep
 
 
-def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
+def scanning_network(base_ip = '192.168.0', show_reachable_ips = False):
     if not show_reachable_ips:
         bar = Bar('Processing', max=254)
     ips = []
@@ -33,7 +33,7 @@ def scanning_network(base_ip = '192.168.0', show_reachable_ips=False):
     return ips
 
 
-def scanning_network_write_to_file(base_ip = '192.168.0', show_reachable_ips=False, write_to_file='reachable_ips.txt'):
+def scanning_network_write_to_file(base_ip = '192.168.0', show_reachable_ips = False, write_to_file = 'reachable_ips.txt'):
     ip_hosts = scanning_network(show_reachable_ips=False)
     if len(ip_hosts) > 0:
         if write_to_file:
