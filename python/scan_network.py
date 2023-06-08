@@ -1,45 +1,51 @@
 #!/usr/bin/env python3
 
+import ipaddress
 import platform    # let you get the operating system name
 import subprocess  # let you execute a shell command
 from progress.bar import Bar
 from time import sleep
 
 
-def scanning_network(base_ip='192.168.0', show_reachable_ips=False):
-    print(f"I'm going to scan {base_ip}.x network")
-    if not show_reachable_ips:
-        bar = Bar('Processing', max=254)
+def scanning_network(base_ip='192.168.0.0/24', show_reachable_ips=False):
     ips = []
+    try:
+        network_ipv4 = ipaddress.IPv4Network(base_ip)
+    except ValueError:
+        print('address/netmask is invalid for IPv4:', base_ip)
+        return ips
+
+    print(f"I'm going to scan {base_ip} network")
+    if not show_reachable_ips:
+        bar = Bar('Processing', max=len(list(network_ipv4.hosts())))
+
     if platform.system().lower() == 'windows':
         packets_opt = '-n'
     else:
         packets_opt = '-c'
 
-    i = 1
-    while i < 255:
-        new_ip = f'{base_ip}.{i}'
-        command = ['ping', packets_opt, '1', '-W1', new_ip ]
+    for ip in network_ipv4.hosts():
+        command = ['ping', packets_opt, '1', '-W1', str(ip) ]
         try:
             if subprocess.run(args=command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
                 if show_reachable_ips:
-                    print(f'{base_ip}.{i} reachable')
-                ips.append(new_ip)
+                    print(f'{str(ip)} is reachable')
+                ips.append(str(ip))
         except KeyboardInterrupt:
             break
         if not show_reachable_ips:
             bar.next()
-        i += 1
     bar.finish()
     return ips
 
 
-def scanning_network_write_to_file(base_ip='192.168.0', show_reachable_ips=False, write_to_file='reachable_ips.txt'):
+def scanning_network_write_to_file(base_ip='192.168.0.0/24', show_reachable_ips=False, write_to_file='reachable_ips.txt'):
     ip_hosts = scanning_network(base_ip=base_ip, show_reachable_ips=False)
     if len(ip_hosts) > 0:
         if write_to_file:
             with open(write_to_file, 'w+') as f:
                 f.write('\n'.join(ip_hosts))
+                f.write('\n')
             print(f'See file {write_to_file} for output')
         else:
             sleep(2)
