@@ -14,7 +14,7 @@ def scanning_network(network_ip='192.168.0.0/24', show_reachable_ips=False):
     try:
         network_ipv4 = ipaddress.IPv4Network(network_ip)
     except ValueError:
-        print('address/netmask is invalid for IPv4:', base_ip)
+        print('address/netmask is invalid for IPv4:', network_ip)
         return ips
 
     print(f"I'm going to scan {network_ip} network")
