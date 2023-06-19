@@ -1,5 +1,6 @@
 __pycache__/
 *~
 bash/*~
+bash/shutdown_hosts.txt
 python/*~
 python/reachable_ips.txt
