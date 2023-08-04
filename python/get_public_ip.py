@@ -65,7 +65,7 @@ def get_ip_address(use_any_service, what_service, what_service_url):
         else:
             external_ip = data
 
-        print(f"Your public IP is {external_ip}.")
+        print(f"Your public IP is {str.strip(external_ip)}.")
 
     except urllib.error.URLError:
         print("The service you are requesting seems to be off-line. Are you sure you're connected to the Internet?")
