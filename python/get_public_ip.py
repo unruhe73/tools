@@ -8,11 +8,13 @@ from random import choice
 from random import randint
 
 
-service = ['ident.me', 'ifconfig.me', 'dyndns.com']
+service = ['ident.me', 'ifconfig.me', 'icanhazip.com', 'dyndns.com']
 get_ip_service = {}
 get_ip_service[service[0]] = 'https://ident.me'
 get_ip_service[service[1]] = 'https://ifconfig.me'
-get_ip_service[service[2]] = 'http://checkip.dyndns.com/'
+get_ip_service[service[2]] = 'https://icanhazip.com'
+get_ip_service[service[3]] = 'http://checkip.dyndns.com'
+id_dyndns = 3
 
 
 def get_parameters():
@@ -41,7 +43,7 @@ def get_ip_address(use_any_service, what_service, what_service_url):
                 n += 1
             try:
                 c_service = int(input("What service do you want to use to get your IP? "))
-                if c_service < 1 or c_service > 3:
+                if c_service < 1 or c_service > id_dyndns + 1:
                     print("*** Sorry, but your choice is not valid!")
                 else:
                     get_choice = False
@@ -52,13 +54,13 @@ def get_ip_address(use_any_service, what_service, what_service_url):
                 sys.exit(1)
         c_service -= 1
     else:
-        c_service = randint(0, 2)
+        c_service = randint(0, id_dyndns)
         print(f"I'm using {service[c_service]} service.")
 
     url = get_ip_service[service[c_service]]
     try:
         data = urllib.request.urlopen(url).read().decode('utf8')
-        if c_service == 2:
+        if c_service == id_dyndns:
             external_ip = re.compile(r'Address: (\d+\.\d+\.\d+\.\d+)').search(data).group(1)
         else:
             external_ip = data
