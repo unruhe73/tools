@@ -20,21 +20,21 @@ id_dyndns = 3
 def get_parameters():
     parser = argparse.ArgumentParser(description='A python script to detect your public IP address')
     pyname = sys.argv[0]
-    parser.add_argument('-y', '--any', help='let choose to the scritp the service to use to get you public IP address', action="store_true")
+    parser.add_argument('-k', '--ask', help='let user choose the service to use to get you public IP address', action="store_true")
     args = parser.parse_args()
 
     what_service = choice(service)
     what_service_url = get_ip_service[what_service]
-    if args.any:
-        use_any_service = True
+    if args.ask:
+        ask_service = True
     else:
-        use_any_service = False
+        ask_service = False
 
-    return use_any_service, what_service, what_service_url
+    return ask_service, what_service, what_service_url
 
 
-def get_ip_address(use_any_service, what_service, what_service_url):
-    if not use_any_service:
+def get_ip_address(ask_service, what_service, what_service_url):
+    if ask_service:
         get_choice = True
         while (get_choice):
             n = 1
@@ -72,5 +72,5 @@ def get_ip_address(use_any_service, what_service, what_service_url):
 
 
 if __name__ == '__main__':
-    use_any_service, what_service, what_service_url = get_parameters()
-    get_ip_address(use_any_service, what_service, what_service_url)
+    ask_service, what_service, what_service_url = get_parameters()
+    get_ip_address(ask_service, what_service, what_service_url)
