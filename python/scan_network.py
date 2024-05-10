@@ -5,7 +5,7 @@ import sys                    # let you access to system stuff as argv command l
 import ipaddress              # let you use IP addresses for hosts/networks
 import platform               # let you get the operating system name
 import subprocess             # let you execute a shell command
-from progress.bar import Bar  # let you use a progress bar
+from progressbar import Bar  # let you use a progress bar
 from time import sleep        # let you use sleep to delay
 
 
