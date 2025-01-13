@@ -19,9 +19,6 @@ def scanning_network(network_ip='192.168.0.0/24', show_reachable_ips=False):
 
     print(f"I'm going to scan {network_ip} network")
     if not show_reachable_ips:
-#        widgets = ['Processing ', AnimatedMarker()]
-#        bar = ProgressBar(widgets=widgets).start()
-        #bar = ProgressBar('Processing', max=len(list(network_ipv4.hosts())))
         widgets = [' [ Network scanning... ',
            Timer(format= 'elapsed time: %(elapsed)s'),
            '] ',
