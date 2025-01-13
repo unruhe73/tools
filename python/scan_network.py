@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import argparse               # let you get parameters from the command line
-import sys                    # let you access to system stuff as argv command line parameters
-import ipaddress              # let you use IP addresses for hosts/networks
-import platform               # let you get the operating system name
-import subprocess             # let you execute a shell command
-from progressbar import Bar  # let you use a progress bar
-from time import sleep        # let you use sleep to delay
+import argparse                                                       # let you get parameters from the command line
+import sys                                                            # let you access to system stuff as argv command line parameters
+import ipaddress                                                      # let you use IP addresses for hosts/networks
+import platform                                                       # let you get the operating system name
+import subprocess                                                     # let you execute a shell command
+from progressbar import Bar, Timer, ETA, ProgressBar, AnimatedMarker  # let you use a progress bar
+from time import sleep                                                # let you use sleep to delay
 
 
 def scanning_network(network_ip='192.168.0.0/24', show_reachable_ips=False):
@@ -19,7 +19,16 @@ def scanning_network(network_ip='192.168.0.0/24', show_reachable_ips=False):
 
     print(f"I'm going to scan {network_ip} network")
     if not show_reachable_ips:
-        bar = Bar('Processing', max=len(list(network_ipv4.hosts())))
+#        widgets = ['Processing ', AnimatedMarker()]
+#        bar = ProgressBar(widgets=widgets).start()
+        #bar = ProgressBar('Processing', max=len(list(network_ipv4.hosts())))
+        widgets = [' [ Network scanning... ',
+           Timer(format= 'elapsed time: %(elapsed)s'),
+           '] ',
+           AnimatedMarker(),' (',
+           ETA(), ') ',
+        ]
+        bar = ProgressBar(max_value=len(list(network_ipv4.hosts())), widgets=widgets).start()
 
     if platform.system().lower() == 'windows':
         packets_opt = '-n'
